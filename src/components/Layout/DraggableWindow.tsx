@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Window95 } from '../Windows95UI';
+import { Window95 } from '../Windows95UI/Windows95';
 import { Position } from '../../types';
 
 interface DraggableWindowProps {

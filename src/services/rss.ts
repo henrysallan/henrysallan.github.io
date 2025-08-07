@@ -1,33 +1,52 @@
 import { RSSArticle } from '../types';
 
-// Mock RSS service - replace with Firebase Functions call
+const CORS_PROXY = "https://api.allorigins.win/raw?url=";
+
+const feedUrls = [
+  'https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml',
+  'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',
+  'http://astralcodexten.substack.com/feed'
+];
+
 class RSSService {
   async fetchFeeds(): Promise<RSSArticle[]> {
-    // This will be replaced with actual RSS fetching via Firebase
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          { 
-            title: "Breaking: Windows 95 Makes a Comeback", 
-            description: "Nostalgic developers everywhere rejoice as retro UI makes a return...", 
-            link: "https://example.com/1",
-            source: "NYT Technology"
-          },
-          { 
-            title: "The Art of RSS in 2025", 
-            description: "Why RSS feeds are still relevant in the age of social media...", 
-            link: "https://example.com/2",
-            source: "NYT World"
-          },
-          { 
-            title: "On Building Personal Dashboards", 
-            description: "Scott Alexander discusses the philosophy of personal information management...", 
-            link: "https://example.com/3",
-            source: "Astral Codex Ten"
-          }
-        ]);
-      }, 1000);
+    const articles: RSSArticle[] = [];
+    
+    for (const url of feedUrls) {
+      try {
+        const response = await fetch(`${CORS_PROXY}${encodeURIComponent(url)}`);
+        if (!response.ok) {
+          console.error(`Failed to fetch ${url}: ${response.statusText}`);
+          continue;
+        }
+        const str = await response.text();
+        const data = new window.DOMParser().parseFromString(str, "text/xml");
+        
+        const sourceTitle = data.querySelector("channel > title")?.textContent || 'Unknown Source';
+        const items = data.querySelectorAll("item");
+        
+        items.forEach(item => {
+          articles.push({
+            title: item.querySelector("title")?.textContent || '',
+            link: item.querySelector("link")?.textContent || '',
+            description: item.querySelector("description")?.textContent?.replace(/<[^>]*>?/gm, '') || '', // Strip HTML tags
+            pubDate: item.querySelector("pubDate")?.textContent || '',
+            source: sourceTitle,
+          });
+        });
+      } catch (error) {
+        console.error(`Error parsing feed from ${url}:`, error);
+      }
+    }
+    
+    // Sort articles by publication date, newest first
+    articles.sort((a, b) => {
+      const dateA = a.pubDate ? new Date(a.pubDate).getTime() : 0;
+      const dateB = b.pubDate ? new Date(b.pubDate).getTime() : 0;
+      return dateB - dateA;
     });
+
+    return articles.slice(0, 30); // Return top 30 newest articles
   }
 }
 

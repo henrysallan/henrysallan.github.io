@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { auth } from './config/firebase';
 import { DraggableWindow } from './components/Layout/DraggableWindow';
 import { Taskbar } from './components/Layout/Taskbar';
 import { SearchBar } from './components/SearchBar';
@@ -6,6 +8,7 @@ import { RSSFeed } from './components/RSSFeed';
 import { Notes } from './components/Notes';
 import { AILauncher } from './components/AILauncher';
 import { Bookmarks } from './components/Bookmarks';
+import { Login } from './components/Login';
 import { useWindowStore } from './store/useWindowStore';
 import { WindowType } from './types';
 import { colors } from './styles/colors';
@@ -19,14 +22,10 @@ const componentMap: Record<WindowType, React.ComponentType> = {
   bookmarks: Bookmarks
 };
 
-const desktopIcons: { type: WindowType; icon: string; label: string }[] = [
-  { type: 'search', icon: '🔍', label: 'Search' },
-  { type: 'rss', icon: '📰', label: 'RSS Feed' },
-  { type: 'notes', icon: '📝', label: 'Notes' }
-];
-
 function App() {
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
   const {
     windows,
@@ -37,12 +36,22 @@ function App() {
     focusWindow,
     saveLayout,
     loadLayout,
-    clearAll
+    clearAll,
+    setUserId
   } = useWindowStore();
 
   useEffect(() => {
-    loadLayout();
-  }, [loadLayout]);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setUserId(currentUser?.uid || null);
+      setIsLoading(false);
+      if (currentUser) {
+        // Load layout once user is logged in
+        loadLayout();
+      }
+    });
+    return () => unsubscribe();
+  }, [loadLayout, setUserId]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -50,11 +59,18 @@ function App() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
-  const handleSaveLayout = () => {
-    saveLayout();
-    alert('Layout saved successfully!');
+  
+  const handleLogout = async () => {
+    await signOut(auth);
   };
+
+  if (isLoading) {
+    return <div style={{ background: colors.desktop, height: '100vh', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Loading...</div>;
+  }
+
+  if (!user) {
+    return <Login />;
+  }
 
   return (
     <div style={{
@@ -64,31 +80,6 @@ function App() {
       position: 'relative',
       overflow: 'hidden'
     }}>
-      {/* Desktop Icons */}
-      <div style={{
-        position: 'absolute',
-        top: '20px',
-        left: '20px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '20px'
-      }}>
-        {desktopIcons.map(({ type, icon, label }) => (
-          <div
-            key={type}
-            style={{
-              textAlign: 'center',
-              color: colors.textLight,
-              cursor: 'pointer'
-            }}
-            onDoubleClick={() => addWindow(type)}
-          >
-            <div style={{ fontSize: '32px' }}>{icon}</div>
-            <div style={{ fontSize: '11px', textShadow: '1px 1px 1px black' }}>{label}</div>
-          </div>
-        ))}
-      </div>
-
       {/* Windows */}
       {windows.map((window) => {
         const Component = componentMap[window.type];
@@ -96,7 +87,7 @@ function App() {
           <div
             key={window.id}
             onClick={() => focusWindow(window.id)}
-            style={{ zIndex: activeWindow === window.id ? 1000 : 100 }}
+            // zIndex is handled by the DraggableWindow now
           >
             <DraggableWindow
               id={window.id}
@@ -120,8 +111,9 @@ function App() {
         activeWindow={activeWindow}
         onAddWindow={addWindow}
         onFocusWindow={focusWindow}
-        onSaveLayout={handleSaveLayout}
+        onSaveLayout={saveLayout}
         onClearAll={clearAll}
+        onLogout={handleLogout}
         currentTime={currentTime}
       />
     </div>

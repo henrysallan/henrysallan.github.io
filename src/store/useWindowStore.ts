@@ -1,11 +1,12 @@
 import { create } from 'zustand';
 import { WindowState, WindowType, Position } from '../types';
-import { layoutService } from '../services/layout';
+import { firestoreService } from '../services/firestoreService';
 
 interface WindowStore {
   windows: WindowState[];
   activeWindow: string | null;
-  
+  userId: string | null;
+  setUserId: (userId: string | null) => void;
   addWindow: (type: WindowType) => void;
   removeWindow: (id: string) => void;
   updateWindowPosition: (id: string, position: Position) => void;
@@ -25,15 +26,18 @@ const windowTitles: Record<WindowType, string> = {
 
 const defaultSizes: Record<WindowType, { width: number; height: number }> = {
   search: { width: 400, height: 100 },
-  rss: { width: 350, height: 300 },
-  notes: { width: 300, height: 300 },
+  rss: { width: 350, height: 400 },
+  notes: { width: 300, height: 350 },
   ai: { width: 280, height: 250 },
-  bookmarks: { width: 200, height: 200 }
+  bookmarks: { width: 200, height: 250 }
 };
 
 export const useWindowStore = create<WindowStore>((set, get) => ({
   windows: [],
   activeWindow: null,
+  userId: null,
+
+  setUserId: (userId) => set({ userId }),
 
   addWindow: (type) => {
     const newWindow: WindowState = {
@@ -72,21 +76,32 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
     set({ activeWindow: id });
   },
 
-  saveLayout: () => {
-    const { windows } = get();
-    layoutService.saveLayout(windows);
+  saveLayout: async () => {
+    const { windows, userId } = get();
+    if (userId) {
+      await firestoreService.saveLayout(userId, windows);
+      alert('Layout saved!');
+    }
   },
 
-  loadLayout: () => {
-    const saved = layoutService.loadLayout();
-    if (saved) {
-      set({ windows: saved });
+  loadLayout: async () => {
+    const { userId } = get();
+    if (userId) {
+      const saved = await firestoreService.loadLayout(userId);
+      if (saved) {
+        set({ windows: saved });
+      }
     }
   },
 
   clearAll: () => {
-    if (confirm('Clear all windows?')) {
+    if (confirm('Clear all windows? This cannot be undone.')) {
       set({ windows: [], activeWindow: null });
+      const { userId } = get();
+      if(userId) {
+        // Also clear the layout in Firestore
+        firestoreService.saveLayout(userId, []);
+      }
     }
   }
 }));

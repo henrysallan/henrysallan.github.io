@@ -10,6 +10,7 @@ export const useRSSFeed = () => {
   useEffect(() => {
     const loadFeeds = async () => {
       try {
+        setLoading(true);
         const data = await rssService.fetchFeeds();
         setArticles(data);
       } catch (err) {

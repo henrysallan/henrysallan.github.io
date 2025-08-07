@@ -3,7 +3,7 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getFunctions } from 'firebase/functions';
 
-// Add your Firebase config here
+// Your web app's Firebase configuration using environment variables
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -13,13 +13,10 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-// Whitelist of allowed emails
-export const ALLOWED_EMAILS = [
-  'isthishenry@gmail.com' // Replace with your email
-];
-
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+// Export Firebase services
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);

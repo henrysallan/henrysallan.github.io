@@ -16,46 +16,48 @@ export const Window95: React.FC<Window95Props> = ({
 }) => (
   <div className="win95-window" style={{
     background: colors.windowBg,
-    border: `2px solid ${colors.borderLight}`,
-    borderRightColor: colors.borderDark,
-    borderBottomColor: colors.borderDark,
+    border: `1px solid ${colors.borderDark}`, // Softer border
+    borderRadius: '8px', // Rounded corners
+    boxShadow: '0 4px 12px rgba(0,0,0,0.2)', // Modern shadow
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
     fontFamily: '"MS Sans Serif", Geneva, sans-serif',
-    fontSize: '11px',
+    fontSize: '12px',
+    overflow: 'hidden', // Ensures children conform to rounded corners
     ...style
   }}>
     <div className="no-select" style={{
-      background: `linear-gradient(to right, ${colors.windowHeader}, ${colors.windowHeaderActive})`,
+      background: colors.windowHeader, // Solid color, no gradient
       color: colors.textLight,
-      padding: '2px 4px',
+      padding: '4px 8px',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
       cursor: 'move'
     }}>
-      <span style={{ fontWeight: 'bold', fontSize: '11px' }}>{title}</span>
-      <div style={{ display: 'flex', gap: '2px' }}>
-        {onClose && (
-          <button 
-            onClick={onClose}
-            className="win95-button"
-            style={{
-              background: colors.button,
-              border: `1px solid`,
-              borderColor: `${colors.borderLight} ${colors.borderDark} ${colors.borderDark} ${colors.borderLight}`,
-              padding: '0 6px',
-              fontSize: '12px',
-              cursor: 'pointer',
-              fontFamily: 'Arial',
-              lineHeight: '16px'
-            }}
-          >
-            ×
-          </button>
-        )}
-      </div>
+      <span style={{ fontWeight: 'bold' }}>{title}</span>
+      {onClose && (
+        <button 
+          onClick={onClose}
+          style={{
+            background: colors.button,
+            border: `1px solid ${colors.borderDark}`,
+            borderRadius: '4px',
+            color: colors.text,
+            width: '20px',
+            height: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            fontFamily: 'Arial',
+            lineHeight: '1'
+          }}
+        >
+          ×
+        </button>
+      )}
     </div>
     <div style={{
       flex: 1,

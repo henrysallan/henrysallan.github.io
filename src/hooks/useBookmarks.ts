@@ -1,26 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Bookmark } from '../types';
-import { bookmarksService } from '../services/bookmarks';
+import { firestoreService } from '../services/firestoreService';
+import { useWindowStore } from '../store/useWindowStore';
 
 export const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const userId = useWindowStore(state => state.userId);
+
+  const loadBookmarks = useCallback(async () => {
+    if (userId) {
+      const saved = await firestoreService.getBookmarks(userId);
+      setBookmarks(saved);
+    }
+  }, [userId]);
 
   useEffect(() => {
-    const loadBookmarks = async () => {
-      const saved = await bookmarksService.getBookmarks();
-      setBookmarks(saved);
-    };
     loadBookmarks();
-  }, []);
+  }, [loadBookmarks]);
 
-  const addBookmark = async (bookmark: Bookmark) => {
-    const updated = await bookmarksService.addBookmark(bookmark);
-    setBookmarks(updated);
+  const addBookmark = async (bookmark: Omit<Bookmark, 'id'>) => {
+    if (userId) {
+      await firestoreService.addBookmark(userId, bookmark);
+      loadBookmarks();
+    }
   };
 
-  const removeBookmark = async (url: string) => {
-    const updated = await bookmarksService.removeBookmark(url);
-    setBookmarks(updated);
+  const removeBookmark = async (id: string) => {
+    if (userId) {
+      await firestoreService.removeBookmark(userId, id);
+      loadBookmarks();
+    }
   };
 
   return { bookmarks, addBookmark, removeBookmark };

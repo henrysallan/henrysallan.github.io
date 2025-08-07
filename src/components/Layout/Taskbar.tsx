@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button95 } from '../Windows95UI';
+import { Button95 } from '../Windows95UI/Button95';
 import { colors } from '../../styles/colors';
 import { WindowState, WindowType } from '../../types';
 
@@ -10,6 +10,7 @@ interface TaskbarProps {
   onFocusWindow: (id: string) => void;
   onSaveLayout: () => void;
   onClearAll: () => void;
+  onLogout: () => void;
   currentTime: string;
 }
 
@@ -20,6 +21,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
   onFocusWindow,
   onSaveLayout,
   onClearAll,
+  onLogout,
   currentTime
 }) => {
   return (
@@ -28,67 +30,43 @@ export const Taskbar: React.FC<TaskbarProps> = ({
       bottom: 0,
       left: 0,
       right: 0,
-      height: '28px',
+      height: '32px',
       background: colors.windowBg,
-      borderTop: `2px solid ${colors.borderLight}`,
+      borderTop: `1px solid ${colors.borderLight}`,
       display: 'flex',
       alignItems: 'center',
-      padding: '0 2px',
-      gap: '2px',
+      padding: '0 4px',
+      gap: '4px',
       zIndex: 2000
     }}>
-      {/* Start Button */}
-      <Button95 style={{ 
-        fontWeight: 'bold', 
-        padding: '2px 6px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '4px'
-      }}>
-        <span style={{ 
-          display: 'inline-block',
-          width: '16px',
-          height: '14px',
-          background: `linear-gradient(to right, #ff0000 25%, #00ff00 25% 50%, #0000ff 50% 75%, #ffff00 75%)`,
-          marginRight: '2px'
-        }}></span>
-        Start
-      </Button95>
+      {/* Quick Launch Icons */}
+      <Button95 onClick={() => onAddWindow('search')} title="Search">🔍</Button95>
+      <Button95 onClick={() => onAddWindow('rss')} title="RSS Feed">📰</Button95>
+      <Button95 onClick={() => onAddWindow('notes')} title="Notes">📝</Button95>
+      <Button95 onClick={() => onAddWindow('ai')} title="AI Launcher">🤖</Button95>
+      <Button95 onClick={() => onAddWindow('bookmarks')} title="Bookmarks">🔖</Button95>
 
       <div style={{ 
         width: '1px', 
-        height: '20px', 
-        background: colors.borderDark,
-        margin: '0 2px'
-      }} />
-
-      {/* Quick Launch */}
-      <Button95 onClick={() => onAddWindow('search')} style={{ padding: '2px 6px', fontSize: '14px' }}>🔍</Button95>
-      <Button95 onClick={() => onAddWindow('rss')} style={{ padding: '2px 6px', fontSize: '14px' }}>📰</Button95>
-      <Button95 onClick={() => onAddWindow('notes')} style={{ padding: '2px 6px', fontSize: '14px' }}>📝</Button95>
-      <Button95 onClick={() => onAddWindow('ai')} style={{ padding: '2px 6px', fontSize: '14px' }}>🤖</Button95>
-      <Button95 onClick={() => onAddWindow('bookmarks')} style={{ padding: '2px 6px', fontSize: '14px' }}>🔖</Button95>
-
-      <div style={{ 
-        width: '1px', 
-        height: '20px', 
+        height: '24px', 
         background: colors.borderDark,
         margin: '0 4px'
       }} />
 
       {/* Window List */}
-      <div style={{ flex: 1, display: 'flex', gap: '2px' }}>
+      <div style={{ flex: 1, display: 'flex', gap: '2px', overflow: 'hidden' }}>
         {windows.map(w => (
           <Button95 
             key={w.id}
             onClick={() => onFocusWindow(w.id)}
+            active={activeWindow === w.id}
             style={{ 
-              padding: '2px 8px',
+              flexShrink: 1,
+              minWidth: '60px',
               maxWidth: '150px',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
-              background: activeWindow === w.id ? '#dfdfdf' : colors.button
             }}
           >
             {w.title}
@@ -97,16 +75,17 @@ export const Taskbar: React.FC<TaskbarProps> = ({
       </div>
 
       {/* System Tray */}
-      <Button95 onClick={onSaveLayout} style={{ padding: '2px 6px' }}>💾</Button95>
-      <Button95 onClick={onClearAll} style={{ padding: '2px 6px' }}>🗑️</Button95>
+      <Button95 onClick={onSaveLayout} title="Save Layout">💾</Button95>
+      <Button95 onClick={onClearAll} title="Clear All Windows">🗑️</Button95>
+      <Button95 onClick={onLogout} title="Logout">Logout</Button95>
       
       {/* Clock */}
       <div style={{ 
         padding: '2px 8px',
-        border: `2px solid`,
-        borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}`,
+        border: `1px solid ${colors.borderDark}`,
+        borderRadius: '4px',
         background: colors.windowBg,
-        fontSize: '11px',
+        fontSize: '12px',
         minWidth: '80px',
         textAlign: 'center'
       }}>

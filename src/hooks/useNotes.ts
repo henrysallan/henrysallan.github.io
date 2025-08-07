@@ -1,21 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Note } from '../types';
-import { notesService } from '../services/notes';
+import { firestoreService } from '../services/firestoreService';
+import { useWindowStore } from '../store/useWindowStore';
 
 export const useNotes = () => {
   const [notes, setNotes] = useState<Note[]>([]);
+  const userId = useWindowStore(state => state.userId);
+
+  const loadNotes = useCallback(async () => {
+    if (userId) {
+      const savedNotes = await firestoreService.getNotes(userId);
+      setNotes(savedNotes);
+    }
+  }, [userId]);
 
   useEffect(() => {
-    const loadNotes = async () => {
-      const savedNotes = await notesService.getNotes();
-      setNotes(savedNotes);
-    };
     loadNotes();
-  }, []);
+  }, [loadNotes]);
 
   const saveNote = async (text: string) => {
-    const newNote = await notesService.saveNote(text);
-    setNotes([newNote, ...notes].slice(0, 5));
+    if (userId) {
+      await firestoreService.saveNote(userId, text);
+      loadNotes(); // Reload notes to show the new one
+    }
   };
 
   return { notes, saveNote };
