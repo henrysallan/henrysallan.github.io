@@ -8,10 +8,8 @@ export const Notes: React.FC = () => {
   const { notes, saveNote } = useNotes();
 
   const handleSave = async () => {
-    if (note.trim()) {
-      await saveNote(note);
-      setNote('');
-    }
+    await saveNote(note);
+    setNote('');
   };
 
   return (
@@ -20,34 +18,26 @@ export const Notes: React.FC = () => {
         value={note}
         onChange={(e) => setNote(e.target.value)}
         placeholder="Type your note here..."
-        style={{ minHeight: '80px' }}
+        style={{ height: '80px' }}
       />
-      <Button95 onClick={handleSave}>
+      <Button95 onClick={handleSave} disabled={!note.trim()}>
         📝 Save Note
       </Button95>
-      {notes.length > 0 && (
-        <div style={{ 
-          flex: 1,
-          overflow: 'auto',
-          border: `2px solid`,
-          borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}`,
-          padding: '4px',
-          background: colors.textLight
-        }}>
-          <div style={{ fontSize: '10px', fontWeight: 'bold', marginBottom: '4px' }}>Recent Notes:</div>
-          {notes.map((n, idx) => (
-            <div key={idx} style={{ 
-              fontSize: '10px', 
-              borderBottom: `1px solid ${colors.border}`, 
-              padding: '4px 0',
-              marginBottom: '4px'
-            }}>
-              <div style={{ color: '#666', fontSize: '9px' }}>{n.timestamp}</div>
-              <div>{n.text}</div>
-            </div>
-          ))}
-        </div>
-      )}
+      <div style={{ 
+        flex: 1,
+        overflow: 'auto',
+        border: `1px solid ${colors.borderDark}`,
+        borderRadius: '4px',
+        padding: '4px',
+        background: colors.textLight
+      }}>
+        {notes.map((n) => (
+          <div key={n.id} style={{ borderBottom: `1px solid ${colors.borderLight}`, padding: '4px 0', marginBottom: '4px' }}>
+            <div style={{ color: '#666', fontSize: '10px' }}>{new Date(n.timestamp).toLocaleString()}</div>
+            <div style={{ whiteSpace: 'pre-wrap' }}>{n.text}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
