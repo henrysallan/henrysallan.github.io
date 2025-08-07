@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "MS Sans Serif", Geneva, sans-serif;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.win95-window {
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf;
+}
+
+.win95-button:active {
+  box-shadow: inset -1px -1px #dfdfdf, inset 1px 1px #0a0a0a;
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
