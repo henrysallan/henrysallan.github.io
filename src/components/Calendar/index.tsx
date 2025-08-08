@@ -19,7 +19,7 @@ interface CalendarEvent {
 }
 
 export const Calendar: React.FC = () => {
-  const { events, loading, error, loadEvents, hasPermission, requestPermission } = useCalendar();
+  const { events, loading, error, loadEvents, hasPermission, requestPermission, logout } = useCalendar();
 
   useEffect(() => {
     if (hasPermission) {
@@ -127,14 +127,34 @@ export const Calendar: React.FC = () => {
         fontWeight: 'bold',
         fontSize: '12px',
         color: '#000000',
-        fontFamily: "'Pixelify Sans', monospace"
+        fontFamily: "'Pixelify Sans', monospace",
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
       }}>
-        📅 {new Date().toLocaleDateString('en-US', { 
-          weekday: 'long', 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
-        })}
+        <span>
+          📅 {new Date().toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })}
+        </span>
+        <button
+          onClick={logout}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#000000',
+            fontSize: '10px',
+            cursor: 'pointer',
+            padding: '2px 4px',
+            fontFamily: "'Pixelify Sans', monospace"
+          }}
+          title="Logout from Google Calendar"
+        >
+          🚪
+        </button>
       </div>
 
       {/* Today's Events */}

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 interface CalendarEvent {
   id: string;
@@ -15,6 +15,12 @@ interface CalendarEvent {
   location?: string;
 }
 
+interface StoredTokens {
+  access_token: string;
+  expires_at: number;
+  refresh_token?: string;
+}
+
 declare global {
   interface Window {
     google: any;
@@ -22,12 +28,63 @@ declare global {
   }
 }
 
+const TOKEN_STORAGE_KEY = 'google_calendar_tokens';
+
 export const useCalendar = () => {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasPermission, setHasPermission] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+
+  // Check for stored tokens on mount
+  useEffect(() => {
+    const checkStoredTokens = () => {
+      try {
+        const stored = localStorage.getItem(TOKEN_STORAGE_KEY);
+        if (stored) {
+          const tokens: StoredTokens = JSON.parse(stored);
+          const now = Date.now();
+          
+          // Check if token is still valid (with 5 minute buffer)
+          if (tokens.expires_at > now + 5 * 60 * 1000) {
+            setAccessToken(tokens.access_token);
+            setHasPermission(true);
+            console.log('Restored valid access token from storage');
+          } else {
+            console.log('Stored token expired, clearing storage');
+            localStorage.removeItem(TOKEN_STORAGE_KEY);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking stored tokens:', error);
+        localStorage.removeItem(TOKEN_STORAGE_KEY);
+      }
+    };
+
+    checkStoredTokens();
+  }, []);
+
+  const storeTokens = useCallback((tokenResponse: any) => {
+    try {
+      const expiresAt = Date.now() + (tokenResponse.expires_in * 1000);
+      const tokens: StoredTokens = {
+        access_token: tokenResponse.access_token,
+        expires_at: expiresAt,
+        refresh_token: tokenResponse.refresh_token
+      };
+      localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(tokens));
+      console.log('Stored tokens, expires at:', new Date(expiresAt));
+    } catch (error) {
+      console.error('Error storing tokens:', error);
+    }
+  }, []);
+
+  const clearStoredTokens = useCallback(() => {
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    setAccessToken(null);
+    setHasPermission(false);
+  }, []);
 
   const loadGoogleAPIs = useCallback(() => {
     return new Promise<void>((resolve, reject) => {
@@ -73,26 +130,31 @@ export const useCalendar = () => {
             if (response.error) {
               console.error('OAuth error:', response);
               setError('Failed to authenticate with Google Calendar');
+              clearStoredTokens();
               resolve(false);
               return;
             }
             
+            console.log('OAuth success, storing tokens');
+            storeTokens(response);
             setAccessToken(response.access_token);
             setHasPermission(true);
+            setError(null);
             resolve(true);
           },
         });
 
-        // Request access token
-        tokenClient.requestAccessToken({ prompt: 'consent' });
+        // Request access token (remove prompt: 'consent' to avoid forcing re-consent)
+        tokenClient.requestAccessToken();
       });
       
     } catch (error) {
       console.error('Calendar permission error:', error);
       setError('Failed to get calendar permission. Please check your Google API configuration.');
+      clearStoredTokens();
       return false;
     }
-  }, [loadGoogleAPIs]);
+  }, [loadGoogleAPIs, storeTokens, clearStoredTokens]);
 
   const loadEvents = useCallback(async () => {
     if (!hasPermission || !accessToken) {
@@ -117,8 +179,6 @@ export const useCalendar = () => {
       url.searchParams.append('key', import.meta.env.VITE_GOOGLE_API_KEY);
 
       console.log('Making Calendar API request to:', url.toString());
-      console.log('Using API Key:', import.meta.env.VITE_GOOGLE_API_KEY?.substring(0, 10) + '...');
-      console.log('Using Access Token:', accessToken?.substring(0, 10) + '...');
 
       const response = await fetch(url.toString(), {
         headers: {
@@ -132,7 +192,17 @@ export const useCalendar = () => {
         const errorData = await response.json().catch(() => ({}));
         console.error('Calendar API response:', errorData);
         
-        if (response.status === 403) {
+        if (response.status === 401) {
+          // Token expired or invalid, clear storage and request new permission
+          console.log('Token expired, requesting new permission');
+          clearStoredTokens();
+          const granted = await requestPermission();
+          if (granted) {
+            // Retry the request with new token
+            return await loadEvents();
+          }
+          throw new Error('Authentication failed. Please try again.');
+        } else if (response.status === 403) {
           if (errorData.error?.message?.includes('Calendar API has not been used')) {
             throw new Error('Google Calendar API is not enabled. Please enable it in Google Cloud Console.');
           } else if (errorData.error?.message?.includes('insufficient')) {
@@ -176,7 +246,14 @@ export const useCalendar = () => {
     } finally {
       setLoading(false);
     }
-  }, [hasPermission, accessToken, requestPermission]);
+  }, [hasPermission, accessToken, requestPermission, clearStoredTokens]);
+
+  const logout = useCallback(() => {
+    clearStoredTokens();
+    setEvents([]);
+    setError(null);
+    console.log('Logged out and cleared calendar data');
+  }, [clearStoredTokens]);
 
   return {
     events,
@@ -185,5 +262,6 @@ export const useCalendar = () => {
     hasPermission,
     requestPermission,
     loadEvents,
+    logout,
   };
 };
