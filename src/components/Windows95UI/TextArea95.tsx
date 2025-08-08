@@ -1,33 +1,21 @@
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import { colors } from '../../styles/colors';
 
-interface TextArea95Props {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  placeholder?: string;
-  style?: CSSProperties;
-}
+interface TextArea95Props extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
-export const TextArea95: React.FC<TextArea95Props> = ({ 
-  value, 
-  onChange, 
-  placeholder, 
-  style = {} 
-}) => (
+export const TextArea95: React.FC<TextArea95Props> = ({ style = {}, ...props }) => (
   <textarea
-    value={value}
-    onChange={onChange}
-    placeholder={placeholder}
     style={{
       background: colors.textLight,
       border: `2px solid`,
       borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}`,
       padding: '4px',
-      fontFamily: '"MS Sans Serif", Geneva, sans-serif',
-      fontSize: '11px',
+      fontFamily: "'MS Sans Serif', 'Pixelated MS Sans Serif', Arial, sans-serif",
+      fontSize: '12px',
       resize: 'none',
       outline: 'none',
       ...style
     }}
+    {...props}
   />
 );

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './styles/windows95.css'; // Keep for base styles if any are still used
+import './styles/windows95.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

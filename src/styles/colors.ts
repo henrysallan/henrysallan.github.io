@@ -1,12 +1,12 @@
 export const colors = {
-  desktop: '#808080', // A neutral grey background
-  windowBg: '#d4d0c8', // A light grey for window backgrounds
-  windowHeader: '#808080', // A solid grey for the header, no gradient
+  desktop: '#555555',      // A mid-gray for the desktop background
+  windowBg: '#c0c0c0',      // The classic light gray for window backgrounds
+  windowHeader: '#000000',  // Black header for high contrast
   text: '#000000',
   textLight: '#ffffff',
-  // Softer border colors for a less contrasted bevel effect
-  borderLight: '#f0f0f0', 
-  borderDark: '#707070',
+  // Contrasting border colors for the bevel/emboss effect
+  borderLight: '#dfdfdf',  // A very light gray for the highlight edge
+  borderDark: '#404040',   // A dark gray for the shadow edge
   button: '#c0c0c0',
-  buttonHover: '#d4d4d4'
+  buttonHover: '#d0d0d0'
 };

@@ -33,6 +33,7 @@ export interface Note {
 }
 
 export interface Bookmark {
+  id: Key | null | undefined;
   name: string;
   url: string;
   icon: string;

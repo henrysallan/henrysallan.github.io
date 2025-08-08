@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { colors } from '../../styles/colors';
 
-// By extending React.ButtonHTMLAttributes, our component accepts all standard button props like `title`, `onClick`, etc.
 interface Button95Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   active?: boolean;
@@ -12,7 +11,7 @@ export const Button95: React.FC<Button95Props> = ({
   style = {}, 
   disabled = false,
   active = false,
-  ...props // Collect all other props
+  ...props 
 }) => {
   const [pressed, setPressed] = useState(false);
   
@@ -23,21 +22,20 @@ export const Button95: React.FC<Button95Props> = ({
       onMouseUp={() => setPressed(false)}
       onMouseLeave={() => setPressed(false)}
       style={{
-        background: disabled ? colors.button : colors.button, // FIX: Use a valid color
-        border: `1px solid`,
+        background: colors.button,
+        border: `2px solid`,
         borderColor: pressed || active
           ? `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}`
           : `${colors.borderLight} ${colors.borderDark} ${colors.borderDark} ${colors.borderLight}`,
         padding: '4px 8px',
-        borderRadius: '4px',
-        fontFamily: '"MS Sans Serif", Geneva, sans-serif',
+        fontFamily: "'MS Sans Serif', 'Pixelated MS Sans Serif', Arial, sans-serif",
         fontSize: '12px',
-        cursor: disabled ? 'default' : 'pointer',
+        cursor: 'pointer',
         userSelect: 'none',
         color: disabled ? '#808080' : colors.text,
         ...style
       }}
-      {...props} // Spread the collected props onto the button element
+      {...props}
     >
       {children}
     </button>

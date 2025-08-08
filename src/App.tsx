@@ -12,7 +12,6 @@ import { Login } from './components/Login';
 import { useWindowStore } from './store/useWindowStore';
 import { WindowType } from './types';
 import { colors } from './styles/colors';
-import './styles/windows95.css';
 
 const componentMap: Record<WindowType, React.ComponentType> = {
   search: SearchBar,
@@ -46,7 +45,6 @@ function App() {
       setUserId(currentUser?.uid || null);
       setIsLoading(false);
       if (currentUser) {
-        // Load layout once user is logged in
         loadLayout();
       }
     });
@@ -76,25 +74,23 @@ function App() {
     <div style={{
       minHeight: '100vh',
       background: colors.desktop,
-      fontFamily: '"MS Sans Serif", Geneva, sans-serif',
+      fontFamily: "'MS Sans Serif', 'Pixelated MS Sans Serif', Arial, sans-serif",
       position: 'relative',
       overflow: 'hidden'
     }}>
-      {/* Windows */}
       {windows.map((window) => {
         const Component = componentMap[window.type];
         return (
           <div
             key={window.id}
             onClick={() => focusWindow(window.id)}
-            // zIndex is handled by the DraggableWindow now
           >
             <DraggableWindow
               id={window.id}
               title={window.title}
               position={window.position}
               onPositionChange={updateWindowPosition}
-              onClose={removeWindow}
+              onClose={() => removeWindow(window.id)}
               zIndex={activeWindow === window.id ? 1000 : 100}
             >
               <div style={{ width: window.size.width, height: window.size.height }}>
@@ -105,7 +101,6 @@ function App() {
         );
       })}
 
-      {/* Taskbar */}
       <Taskbar
         windows={windows}
         activeWindow={activeWindow}

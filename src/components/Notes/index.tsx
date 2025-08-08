@@ -26,13 +26,13 @@ export const Notes: React.FC = () => {
       <div style={{ 
         flex: 1,
         overflow: 'auto',
-        border: `1px solid ${colors.borderDark}`,
-        borderRadius: '4px',
+        border: `2px solid`,
+        borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}`,
         padding: '4px',
         background: colors.textLight
       }}>
         {notes.map((n) => (
-          <div key={n.id} style={{ borderBottom: `1px solid ${colors.borderLight}`, padding: '4px 0', marginBottom: '4px' }}>
+          <div key={n.id} style={{ borderBottom: `1px solid ${colors.borderDark}`, padding: '4px 0', marginBottom: '4px' }}>
             <div style={{ color: '#666', fontSize: '10px' }}>{new Date(n.timestamp).toLocaleString()}</div>
             <div style={{ whiteSpace: 'pre-wrap' }}>{n.text}</div>
           </div>

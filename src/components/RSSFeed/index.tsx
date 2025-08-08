@@ -14,28 +14,26 @@ export const RSSFeed: React.FC = () => {
   }
 
   return (
-    <div style={{ height: '100%', overflowY: 'auto' }}>
+    <div style={{ height: '100%', overflowY: 'auto', background: colors.textLight, border: `2px solid`, borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}` }}>
       {articles.map((article, idx) => (
         <div 
           key={idx} 
           style={{
-            borderBottom: `1px solid ${colors.borderLight}`,
+            borderBottom: `1px solid ${colors.borderDark}`,
             padding: '8px',
             cursor: 'pointer',
-            background: colors.textLight
           }}
           onClick={() => window.open(article.link, '_blank')}
         >
           <div style={{ fontWeight: 'bold', marginBottom: '2px', fontSize: '12px' }}>
             {article.title}
           </div>
-          <div style={{ color: '#666', fontSize: '11px', marginBottom: '4px', maxHeight: '5em', overflow: 'hidden' }}>
+          <div style={{ color: '#333', fontSize: '11px', marginBottom: '4px', maxHeight: '4.5em', overflow: 'hidden' }}>
             {article.description}
           </div>
-          <div style={{ color: '#999', fontSize: '10px', fontStyle: 'italic', display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ color: '#555', fontSize: '10px', fontStyle: 'italic', display: 'flex', justifyContent: 'space-between' }}>
             <span>— {article.source}</span>
-            {/* FIX: Conditionally render the date only if it exists */}
-            <span>{article.pubDate ? new Date(article.pubDate).toLocaleDateString() : ''}</span>
+            {article.pubDate && <span>{new Date(article.pubDate).toLocaleDateString()}</span>}
           </div>
         </div>
       ))}

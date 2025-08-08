@@ -1,32 +1,21 @@
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import { colors } from '../../styles/colors';
 
-interface Select95Props {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  children: React.ReactNode;
-  style?: CSSProperties;
-}
+interface Select95Props extends React.SelectHTMLAttributes<HTMLSelectElement> {}
 
-export const Select95: React.FC<Select95Props> = ({ 
-  value, 
-  onChange, 
-  children, 
-  style = {} 
-}) => (
+export const Select95: React.FC<Select95Props> = ({ children, style = {}, ...props }) => (
   <select
-    value={value}
-    onChange={onChange}
     style={{
       background: colors.textLight,
       border: `2px solid`,
       borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}`,
-      padding: '2px',
-      fontFamily: '"MS Sans Serif", Geneva, sans-serif',
-      fontSize: '11px',
+      padding: '4px',
+      fontFamily: "'MS Sans Serif', 'Pixelated MS Sans Serif', Arial, sans-serif",
+      fontSize: '12px',
       outline: 'none',
       ...style
     }}
+    {...props}
   >
     {children}
   </select>
