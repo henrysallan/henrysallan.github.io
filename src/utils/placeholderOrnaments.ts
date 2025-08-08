@@ -4,11 +4,11 @@
 export const createPlaceholderOrnament = (
   canvas: HTMLCanvasElement,
   style: string,
-  position: string,
+  _position: string, // Position used for future corner-specific variations
   size: number = 32
 ) => {
   const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  if (!ctx) return '';
 
   canvas.width = size;
   canvas.height = size;
@@ -69,7 +69,10 @@ export const generatePlaceholders = () => {
   styles.forEach(style => {
     positions.forEach(position => {
       const key = `${style}/${position}`;
-      placeholders[key] = createPlaceholderOrnament(canvas, style, position);
+      const dataUrl = createPlaceholderOrnament(canvas, style, position);
+      if (dataUrl) {
+        placeholders[key] = dataUrl;
+      }
     });
   });
   

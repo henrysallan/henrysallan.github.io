@@ -19,6 +19,7 @@ export const MedievalBorder: React.FC<MedievalBorderProps> = ({
   onClick,
   disabled = false
 }) => {
+  // Note: disabled prop available for future use (hover states, etc.)
   const colors = {
     light: '#ffffff',
     medium: '#c0c0c0',
@@ -204,8 +205,12 @@ export const MedievalBorder: React.FC<MedievalBorderProps> = ({
   return (
     <div
       className={className}
-      onClick={onClick}
-      style={containerStyle}
+      onClick={disabled ? undefined : onClick}
+      style={{
+        ...containerStyle,
+        opacity: disabled ? 0.6 : 1,
+        cursor: disabled ? 'not-allowed' : onClick ? 'pointer' : 'default'
+      }}
     >
       {/* Outer border */}
       <div style={outerBorderStyle} />
