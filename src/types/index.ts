@@ -1,3 +1,5 @@
+import { Key } from 'react';
+
 export interface WindowState {
   id: string;
   type: WindowType;
