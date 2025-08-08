@@ -116,11 +116,17 @@ export const useCalendar = () => {
       url.searchParams.append('maxResults', '50');
       url.searchParams.append('key', import.meta.env.VITE_GOOGLE_API_KEY);
 
+      console.log('Making Calendar API request to:', url.toString());
+      console.log('Using API Key:', import.meta.env.VITE_GOOGLE_API_KEY?.substring(0, 10) + '...');
+      console.log('Using Access Token:', accessToken?.substring(0, 10) + '...');
+
       const response = await fetch(url.toString(), {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
         },
       });
+
+      console.log('API Response Status:', response.status);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -132,7 +138,7 @@ export const useCalendar = () => {
           } else if (errorData.error?.message?.includes('insufficient')) {
             throw new Error('Insufficient permissions. Please grant calendar access.');
           } else {
-            throw new Error(`Calendar API access denied. Check your API key and OAuth setup.`);
+            throw new Error(`Calendar API access denied: ${errorData.error?.message || 'Check your API key and OAuth setup'}`);
           }
         }
         throw new Error(`Calendar API error: ${response.status} ${response.statusText}`);

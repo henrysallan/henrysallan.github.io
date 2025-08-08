@@ -22,7 +22,7 @@ export const Window95: React.FC<Window95Props> = ({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    fontFamily: "'Jacquard 12', 'MS Sans Serif', monospace",
+    fontFamily: "'Pixelify Sans', monospace",
     fontSize: '12px',
     ...style
   }}>
@@ -34,7 +34,8 @@ export const Window95: React.FC<Window95Props> = ({
       justifyContent: 'space-between',
       alignItems: 'center',
       cursor: 'move',
-      userSelect: 'none'
+      userSelect: 'none',
+      fontFamily: "'Jacquard 12', monospace"
     }}>
       <span style={{ fontWeight: 'bold' }}>{title}</span>
       {onClose && (

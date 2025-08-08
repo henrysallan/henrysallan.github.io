@@ -9,6 +9,8 @@ import { Notes } from './components/Notes';
 import { AILauncher } from './components/AILauncher';
 import { Bookmarks } from './components/Bookmarks';
 import { Calendar } from './components/Calendar';
+import { DesktopImages } from './components/DesktopImages';
+import { UIDemo } from './components/UIDemo';
 import { Login } from './components/Login';
 import { useWindowStore } from './store/useWindowStore';
 import { WindowType } from './types/index';
@@ -20,7 +22,8 @@ const componentMap: Record<WindowType, React.ComponentType> = {
   notes: Notes,
   ai: AILauncher,
   bookmarks: Bookmarks,
-  calendar: Calendar
+  calendar: Calendar,
+  uidemo: UIDemo
 };
 
 function App() {
@@ -34,6 +37,7 @@ function App() {
     addWindow,
     removeWindow,
     updateWindowPosition,
+    updateWindowSize,
     focusWindow,
     saveLayout,
     loadLayout,
@@ -65,7 +69,17 @@ function App() {
   };
 
   if (isLoading) {
-    return <div style={{ background: colors.desktop, height: '100vh', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Loading...</div>;
+    return <div style={{ 
+      background: colors.desktop, 
+      height: '100vh', 
+      color: '#000000', 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center',
+      fontFamily: "'Pixelify Sans', monospace"
+    }}>
+      Loading...
+    </div>;
   }
 
   if (!user) {
@@ -76,7 +90,7 @@ function App() {
     <div style={{
       minHeight: '100vh',
       background: colors.desktop,
-      fontFamily: "'Jacquard 12', 'MS Sans Serif', monospace",
+      fontFamily: "'Pixelify Sans', monospace",
       position: 'relative',
       overflow: 'hidden'
     }}>
@@ -91,17 +105,20 @@ function App() {
               id={window.id}
               title={window.title}
               position={window.position}
+              size={window.size}
               onPositionChange={updateWindowPosition}
+              onSizeChange={updateWindowSize}
               onClose={() => removeWindow(window.id)}
               zIndex={activeWindow === window.id ? 1000 : 100}
             >
-              <div style={{ width: window.size.width, height: window.size.height }}>
-                <Component />
-              </div>
+              <Component />
             </DraggableWindow>
           </div>
         );
       })}
+
+      {/* Desktop Images - draggable images directly on desktop */}
+      <DesktopImages />
 
       <Taskbar
         windows={windows}

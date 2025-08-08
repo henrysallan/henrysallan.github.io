@@ -29,13 +29,30 @@ export const Notes: React.FC = () => {
         border: `2px solid`,
         borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}`,
         padding: '4px',
-        background: colors.textLight,
-        color: colors.text
+        background: '#ffffff',
+        color: '#000000',
+        fontFamily: "'Pixelify Sans', monospace"
       }}>
         {notes.map((n) => (
-          <div key={n.id} style={{ borderBottom: `1px solid ${colors.borderDark}`, padding: '4px 0', marginBottom: '4px' }}>
-            <div style={{ color: '#666', fontSize: '10px' }}>{new Date(n.timestamp).toLocaleString()}</div>
-            <div style={{ whiteSpace: 'pre-wrap', color: colors.text }}>{n.text}</div>
+          <div key={n.id} style={{ 
+            borderBottom: `1px solid ${colors.borderDark}`, 
+            padding: '4px 0', 
+            marginBottom: '4px' 
+          }}>
+            <div style={{ 
+              color: '#666666', 
+              fontSize: '10px',
+              fontFamily: "'Pixelify Sans', monospace"
+            }}>
+              {new Date(n.timestamp).toLocaleString()}
+            </div>
+            <div style={{ 
+              whiteSpace: 'pre-wrap', 
+              color: '#000000',
+              fontFamily: "'Pixelify Sans', monospace"
+            }}>
+              {n.text}
+            </div>
           </div>
         ))}
       </div>

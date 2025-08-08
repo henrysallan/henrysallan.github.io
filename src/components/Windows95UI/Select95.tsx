@@ -10,7 +10,7 @@ export const Select95: React.FC<Select95Props> = ({ children, style = {}, ...pro
       border: `2px solid`,
       borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}`,
       padding: '4px',
-      fontFamily: "'Jacquard 12', 'MS Sans Serif', monospace",
+      fontFamily: "'Pixelify Sans', monospace",
       fontSize: '12px',
       outline: 'none',
       ...style

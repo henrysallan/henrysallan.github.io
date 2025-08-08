@@ -28,7 +28,7 @@ export const Button95: React.FC<Button95Props> = ({
           ? `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}`
           : `${colors.borderLight} ${colors.borderDark} ${colors.borderDark} ${colors.borderLight}`,
         padding: '4px 8px',
-        fontFamily: "'Jacquard 12', 'MS Sans Serif', monospace",
+        fontFamily: "'Pixelify Sans', monospace",
         fontSize: '12px',
         cursor: 'pointer',
         userSelect: 'none',

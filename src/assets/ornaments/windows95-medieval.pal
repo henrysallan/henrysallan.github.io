@@ -1,0 +1,49 @@
+[pal]
+version=1
+
+[colors]
+# Windows 95 Core Colors
+ffffff  # White (highlights)
+c0c0c0  # Light Gray (main background)
+808080  # Dark Gray (shadows)
+000000  # Black (deep shadows/outlines)
+
+# Medieval Accent Colors - Gold Theme
+ffd700  # Bright Gold
+daa520  # Gold
+b8860b  # Dark Gold
+8b7800  # Deep Gold Shadow
+
+# Medieval Accent Colors - Bronze Theme  
+cd7f32  # Bronze
+b8722c  # Dark Bronze
+8b4513  # Brown Bronze
+654321  # Dark Brown
+
+# Medieval Accent Colors - Silver Theme
+e5e5e5  # Bright Silver
+d3d3d3  # Silver
+a9a9a9  # Dark Silver
+696969  # Gray Silver
+
+# Medieval Accent Colors - Special
+50c878  # Emerald Green (Celtic)
+228b22  # Forest Green
+006400  # Dark Green
+8b0000  # Dark Red (Ruby)
+aa0000  # Red
+dc143c  # Crimson
+
+# Stone/Carved Colors
+f5f5dc  # Beige Stone
+d2b48c  # Tan Stone
+bc9a6a  # Brown Stone
+8b7355  # Dark Stone
+556b2f  # Moss Stone
+
+# Additional Shading
+f0f8ff  # Light Highlight
+e0e0e0  # Soft Gray
+707070  # Medium Gray
+404040  # Dark Gray
+202020  # Very Dark Gray

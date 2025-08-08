@@ -14,7 +14,15 @@ export const RSSFeed: React.FC = () => {
   }
 
   return (
-    <div style={{ height: '100%', overflowY: 'auto', background: colors.textLight, color: colors.text, border: `2px solid`, borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}` }}>
+    <div style={{ 
+      height: '100%', 
+      overflowY: 'auto', 
+      background: '#ffffff', 
+      color: '#000000', 
+      fontFamily: "'Pixelify Sans', monospace",
+      border: `2px solid`, 
+      borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}` 
+    }}>
       {articles.map((article, idx) => (
         <div 
           key={idx} 
@@ -25,13 +33,33 @@ export const RSSFeed: React.FC = () => {
           }}
           onClick={() => window.open(article.link, '_blank')}
         >
-          <div style={{ fontWeight: 'bold', marginBottom: '2px', fontSize: '12px', color: colors.text }}>
+          <div style={{ 
+            fontWeight: 'bold', 
+            marginBottom: '2px', 
+            fontSize: '12px', 
+            color: '#000000',
+            fontFamily: "'Pixelify Sans', monospace"
+          }}>
             {article.title}
           </div>
-          <div style={{ color: '#333', fontSize: '11px', marginBottom: '4px', maxHeight: '4.5em', overflow: 'hidden' }}>
+          <div style={{ 
+            color: '#000000', 
+            fontSize: '11px', 
+            marginBottom: '4px', 
+            maxHeight: '4.5em', 
+            overflow: 'hidden',
+            fontFamily: "'Pixelify Sans', monospace"
+          }}>
             {article.description}
           </div>
-          <div style={{ color: '#555', fontSize: '10px', fontStyle: 'italic', display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ 
+            color: '#666666', 
+            fontSize: '10px', 
+            fontStyle: 'italic', 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            fontFamily: "'Pixelify Sans', monospace"
+          }}>
             <span>— {article.source}</span>
             {article.pubDate && <span>{new Date(article.pubDate).toLocaleDateString()}</span>}
           </div>

@@ -45,6 +45,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
       <Button95 onClick={() => onAddWindow('ai')} title="AI Launcher">🤖</Button95>
       <Button95 onClick={() => onAddWindow('bookmarks')} title="Bookmarks">🔖</Button95>
       <Button95 onClick={() => onAddWindow('calendar')} title="Calendar">📅</Button95>
+      <Button95 onClick={() => onAddWindow('uidemo')} title="UI Demo">🎨</Button95>
 
       <div style={{ width: '2px', height: '28px', borderLeft: `1px solid ${colors.borderDark}`, borderRight: `1px solid ${colors.borderLight}`, margin: '0 2px' }} />
 
@@ -61,7 +62,17 @@ export const Taskbar: React.FC<TaskbarProps> = ({
         ))}
       </div>
 
-      <div style={{ padding: '2px 8px', border: `2px solid`, borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}`, fontSize: '12px', minWidth: '80px', textAlign: 'center' }}>
+      <div style={{ 
+        padding: '2px 8px', 
+        border: `2px solid`, 
+        borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}`, 
+        fontSize: '11px', 
+        fontFamily: "'Pixelify Sans', monospace",
+        color: '#000000',
+        backgroundColor: '#c0c0c0',
+        minWidth: '80px', 
+        textAlign: 'center' 
+      }}>
         {currentTime}
       </div>
        <Button95 onClick={onSaveLayout} title="Save Layout">💾</Button95>

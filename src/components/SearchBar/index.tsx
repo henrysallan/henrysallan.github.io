@@ -12,7 +12,12 @@ export const SearchBar: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+    <div style={{ 
+      display: 'flex', 
+      gap: '4px', 
+      alignItems: 'center',
+      fontFamily: "'Pixelify Sans', monospace"
+    }}>
       <span style={{ fontSize: '16px' }}>🔍</span>
       <Input95
         value={query}

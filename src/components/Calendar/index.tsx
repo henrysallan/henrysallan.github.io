@@ -116,7 +116,8 @@ export const Calendar: React.FC = () => {
       height: '100%', 
       display: 'flex', 
       flexDirection: 'column',
-      color: colors.text 
+      color: '#000000',
+      fontFamily: "'Pixelify Sans', monospace"
     }}>
       {/* Header */}
       <div style={{
@@ -124,7 +125,9 @@ export const Calendar: React.FC = () => {
         borderBottom: `1px solid ${colors.borderDark}`,
         background: colors.windowHeader,
         fontWeight: 'bold',
-        fontSize: '12px'
+        fontSize: '12px',
+        color: '#000000',
+        fontFamily: "'Pixelify Sans', monospace"
       }}>
         📅 {new Date().toLocaleDateString('en-US', { 
           weekday: 'long', 
@@ -142,7 +145,8 @@ export const Calendar: React.FC = () => {
               fontWeight: 'bold', 
               marginBottom: '8px',
               fontSize: '11px',
-              color: colors.text
+              color: '#000000',
+              fontFamily: "'Jacquard 12', monospace"
             }}>
               Today's Events:
             </div>
@@ -154,8 +158,9 @@ export const Calendar: React.FC = () => {
                   borderColor: `${colors.borderLight} ${colors.borderDark} ${colors.borderDark} ${colors.borderLight}`,
                   padding: '6px',
                   marginBottom: '4px',
-                  background: colors.textLight,
-                  fontSize: '11px'
+                  background: '#ffffff',
+                  fontSize: '11px',
+                  fontFamily: "'Pixelify Sans', monospace"
                 }}
               >
                 <div style={{ fontWeight: 'bold', marginBottom: '2px' }}>
@@ -181,7 +186,8 @@ export const Calendar: React.FC = () => {
               fontWeight: 'bold', 
               marginBottom: '8px',
               fontSize: '11px',
-              color: colors.text
+              color: '#000000',
+              fontFamily: "'Jacquard 12', monospace"
             }}>
               Upcoming Events:
             </div>

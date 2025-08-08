@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { WindowState, WindowType, Position } from '../types/index';
+import { WindowState, WindowType, Position, Size } from '../types/index';
 import { firestoreService } from '../services/firestoreService';
 
 interface WindowStore {
@@ -10,6 +10,7 @@ interface WindowStore {
   addWindow: (type: WindowType) => void;
   removeWindow: (id: string) => void;
   updateWindowPosition: (id: string, position: Position) => void;
+  updateWindowSize: (id: string, size: Size) => void;
   focusWindow: (id: string) => void;
   saveLayout: () => void;
   loadLayout: () => void;
@@ -22,7 +23,8 @@ const windowTitles: Record<WindowType, string> = {
   notes: 'Quick Notes',
   ai: 'AI Assistant',
   bookmarks: 'Bookmarks',
-  calendar: 'Calendar'
+  calendar: 'Calendar',
+  uidemo: 'UI Demo'
 };
 
 const defaultSizes: Record<WindowType, { width: number; height: number }> = {
@@ -31,7 +33,8 @@ const defaultSizes: Record<WindowType, { width: number; height: number }> = {
   notes: { width: 300, height: 350 },
   ai: { width: 280, height: 250 },
   bookmarks: { width: 200, height: 250 },
-  calendar: { width: 320, height: 420 }
+  calendar: { width: 320, height: 420 },
+  uidemo: { width: 500, height: 600 }
 };
 
 export const useWindowStore = create<WindowStore>((set, get) => ({
@@ -70,6 +73,14 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
     set(state => ({
       windows: state.windows.map(w => 
         w.id === id ? { ...w, position } : w
+      )
+    }));
+  },
+
+  updateWindowSize: (id, size) => {
+    set(state => ({
+      windows: state.windows.map(w => 
+        w.id === id ? { ...w, size } : w
       )
     }));
   },

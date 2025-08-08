@@ -10,7 +10,7 @@ export const TextArea95: React.FC<TextArea95Props> = ({ style = {}, ...props }) 
       border: `2px solid`,
       borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}`,
       padding: '4px',
-      fontFamily: "'Jacquard 12', 'MS Sans Serif', monospace",
+      fontFamily: "'Pixelify Sans', monospace",
       fontSize: '12px',
       resize: 'none',
       outline: 'none',

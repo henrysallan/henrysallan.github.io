@@ -26,10 +26,24 @@ export const Login: React.FC = () => {
         padding: '40px',
         border: `2px solid`,
         borderColor: `${colors.borderLight} ${colors.borderDark} ${colors.borderDark} ${colors.borderLight}`,
-        textAlign: 'center'
+        textAlign: 'center',
+        fontFamily: "'Pixelify Sans', monospace"
       }}>
-        <h1 style={{ margin: '0 0 20px 0', color: colors.text, fontSize: '16px' }}>Dashboard Login</h1>
-        <p style={{ margin: '0 0 30px 0', color: colors.text }}>Please sign in to continue</p>
+        <h1 style={{ 
+          margin: '0 0 20px 0', 
+          color: '#000000', 
+          fontSize: '16px',
+          fontFamily: "'Jacquard 12', monospace"
+        }}>
+          Dashboard Login
+        </h1>
+        <p style={{ 
+          margin: '0 0 30px 0', 
+          color: '#000000',
+          fontFamily: "'Pixelify Sans', monospace"
+        }}>
+          Please sign in to continue
+        </p>
         <Button95 onClick={handleLogin}>
           Sign In with Google
         </Button95>

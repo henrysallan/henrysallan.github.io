@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getFunctions } from 'firebase/functions';
+import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration using environment variables
 const firebaseConfig = {
@@ -22,3 +23,7 @@ export const googleProvider = new GoogleAuthProvider();
 googleProvider.addScope('https://www.googleapis.com/auth/calendar.readonly');
 export const db = getFirestore(app);
 export const functions = getFunctions(app);
+
+// Initialize storage with CORS configuration
+const storage = getStorage(app);
+export { storage };

@@ -8,7 +8,7 @@ export interface WindowState {
   size: Size;
 }
 
-export type WindowType = 'search' | 'rss' | 'notes' | 'ai' | 'bookmarks' | 'calendar';
+export type WindowType = 'search' | 'rss' | 'notes' | 'ai' | 'bookmarks' | 'calendar' | 'uidemo';
 
 export interface Position {
   x: number;

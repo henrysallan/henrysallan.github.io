@@ -17,7 +17,12 @@ export const Bookmarks: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      gap: '4px',
+      fontFamily: "'Pixelify Sans', monospace"
+    }}>
       {bookmarks.map((link, idx) => (
         <Button95 
           key={idx}
@@ -38,7 +43,8 @@ export const Bookmarks: React.FC = () => {
           border: `2px solid`,
           borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}`,
           padding: '4px',
-          background: colors.windowBg
+          background: colors.windowBg,
+          fontFamily: "'Pixelify Sans', monospace"
         }}>
           <Input95
             value={newLink.name}
