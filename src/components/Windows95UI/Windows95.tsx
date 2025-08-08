@@ -22,13 +22,13 @@ export const Window95: React.FC<Window95Props> = ({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    fontFamily: "'MS Sans Serif', 'Pixelated MS Sans Serif', Arial, sans-serif",
+    fontFamily: "'Jacquard 12', 'MS Sans Serif', monospace",
     fontSize: '12px',
     ...style
   }}>
     <div style={{
       background: colors.windowHeader,
-      color: colors.textLight,
+      color: colors.text,
       padding: '2px 4px',
       display: 'flex',
       justifyContent: 'space-between',
@@ -58,7 +58,8 @@ export const Window95: React.FC<Window95Props> = ({
     <div style={{
       flex: 1,
       padding: '8px',
-      overflow: 'auto'
+      overflow: 'auto',
+      color: colors.text
     }}>
       {children}
     </div>

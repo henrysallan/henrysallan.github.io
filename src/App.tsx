@@ -8,9 +8,10 @@ import { RSSFeed } from './components/RSSFeed';
 import { Notes } from './components/Notes';
 import { AILauncher } from './components/AILauncher';
 import { Bookmarks } from './components/Bookmarks';
+import { Calendar } from './components/Calendar';
 import { Login } from './components/Login';
 import { useWindowStore } from './store/useWindowStore';
-import { WindowType } from './types';
+import { WindowType } from './types/index';
 import { colors } from './styles/colors';
 
 const componentMap: Record<WindowType, React.ComponentType> = {
@@ -18,7 +19,8 @@ const componentMap: Record<WindowType, React.ComponentType> = {
   rss: RSSFeed,
   notes: Notes,
   ai: AILauncher,
-  bookmarks: Bookmarks
+  bookmarks: Bookmarks,
+  calendar: Calendar
 };
 
 function App() {
@@ -74,7 +76,7 @@ function App() {
     <div style={{
       minHeight: '100vh',
       background: colors.desktop,
-      fontFamily: "'MS Sans Serif', 'Pixelated MS Sans Serif', Arial, sans-serif",
+      fontFamily: "'Jacquard 12', 'MS Sans Serif', monospace",
       position: 'relative',
       overflow: 'hidden'
     }}>

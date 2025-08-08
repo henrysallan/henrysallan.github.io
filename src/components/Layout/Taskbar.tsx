@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button95 } from '../Windows95UI';
 import { colors } from '../../styles/colors';
-import { WindowState, WindowType } from '../../types';
+import { WindowState, WindowType } from '../../types/index';
 
 interface TaskbarProps {
   windows: WindowState[];
@@ -44,6 +44,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
       <Button95 onClick={() => onAddWindow('notes')} title="Notes">📝</Button95>
       <Button95 onClick={() => onAddWindow('ai')} title="AI Launcher">🤖</Button95>
       <Button95 onClick={() => onAddWindow('bookmarks')} title="Bookmarks">🔖</Button95>
+      <Button95 onClick={() => onAddWindow('calendar')} title="Calendar">📅</Button95>
 
       <div style={{ width: '2px', height: '28px', borderLeft: `1px solid ${colors.borderDark}`, borderRight: `1px solid ${colors.borderLight}`, margin: '0 2px' }} />
 

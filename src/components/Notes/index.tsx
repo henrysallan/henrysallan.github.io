@@ -29,12 +29,13 @@ export const Notes: React.FC = () => {
         border: `2px solid`,
         borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}`,
         padding: '4px',
-        background: colors.textLight
+        background: colors.textLight,
+        color: colors.text
       }}>
         {notes.map((n) => (
           <div key={n.id} style={{ borderBottom: `1px solid ${colors.borderDark}`, padding: '4px 0', marginBottom: '4px' }}>
             <div style={{ color: '#666', fontSize: '10px' }}>{new Date(n.timestamp).toLocaleString()}</div>
-            <div style={{ whiteSpace: 'pre-wrap' }}>{n.text}</div>
+            <div style={{ whiteSpace: 'pre-wrap', color: colors.text }}>{n.text}</div>
           </div>
         ))}
       </div>

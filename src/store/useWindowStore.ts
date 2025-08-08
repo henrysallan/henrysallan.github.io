@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { WindowState, WindowType, Position } from '../types';
+import { WindowState, WindowType, Position } from '../types/index';
 import { firestoreService } from '../services/firestoreService';
 
 interface WindowStore {
@@ -21,7 +21,8 @@ const windowTitles: Record<WindowType, string> = {
   rss: 'RSS Feed',
   notes: 'Quick Notes',
   ai: 'AI Assistant',
-  bookmarks: 'Bookmarks'
+  bookmarks: 'Bookmarks',
+  calendar: 'Calendar'
 };
 
 const defaultSizes: Record<WindowType, { width: number; height: number }> = {
@@ -29,7 +30,8 @@ const defaultSizes: Record<WindowType, { width: number; height: number }> = {
   rss: { width: 350, height: 400 },
   notes: { width: 300, height: 350 },
   ai: { width: 280, height: 250 },
-  bookmarks: { width: 200, height: 250 }
+  bookmarks: { width: 200, height: 250 },
+  calendar: { width: 320, height: 420 }
 };
 
 export const useWindowStore = create<WindowStore>((set, get) => ({

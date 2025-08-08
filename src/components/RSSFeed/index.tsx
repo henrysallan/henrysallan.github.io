@@ -14,7 +14,7 @@ export const RSSFeed: React.FC = () => {
   }
 
   return (
-    <div style={{ height: '100%', overflowY: 'auto', background: colors.textLight, border: `2px solid`, borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}` }}>
+    <div style={{ height: '100%', overflowY: 'auto', background: colors.textLight, color: colors.text, border: `2px solid`, borderColor: `${colors.borderDark} ${colors.borderLight} ${colors.borderLight} ${colors.borderDark}` }}>
       {articles.map((article, idx) => (
         <div 
           key={idx} 
@@ -25,7 +25,7 @@ export const RSSFeed: React.FC = () => {
           }}
           onClick={() => window.open(article.link, '_blank')}
         >
-          <div style={{ fontWeight: 'bold', marginBottom: '2px', fontSize: '12px' }}>
+          <div style={{ fontWeight: 'bold', marginBottom: '2px', fontSize: '12px', color: colors.text }}>
             {article.title}
           </div>
           <div style={{ color: '#333', fontSize: '11px', marginBottom: '4px', maxHeight: '4.5em', overflow: 'hidden' }}>
