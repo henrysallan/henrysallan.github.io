@@ -10,6 +10,7 @@ import { AILauncher } from './components/AILauncher';
 import { Bookmarks } from './components/Bookmarks';
 import { Calendar } from './components/Calendar';
 import { DesktopImages } from './components/DesktopImages';
+import { Desktop3DModels } from './components/Desktop3DModels';
 import { UIDemo } from './components/UIDemo';
 import { Login } from './components/Login';
 import { useWindowStore } from './store/useWindowStore';
@@ -119,6 +120,9 @@ function App() {
 
       {/* Desktop Images - draggable images directly on desktop */}
       <DesktopImages />
+
+      {/* Desktop 3D Models - draggable 3D viewers directly on desktop */}
+      <Desktop3DModels />
 
       <Taskbar
         windows={windows}
