@@ -245,7 +245,18 @@ export const DesktopImages: React.FC = () => {
     deleteImage 
   } = useDesktopImages();
 
+  const { onStorageChange } = useSyncContext();
   const [isDragOver, setIsDragOver] = useState(false);
+
+  const handleImageUpload = useCallback(async (file: File, position: { x: number; y: number }) => {
+    await addImage(file, position);
+    onStorageChange(); // Notify that storage has changed
+  }, [addImage, onStorageChange]);
+
+  const handleImageDelete = useCallback(async (id: string) => {
+    await deleteImage(id);
+    onStorageChange(); // Notify that storage has changed
+  }, [deleteImage, onStorageChange]);
 
   const handleDrop = useCallback(async (e: DragEvent) => {
     e.preventDefault();
@@ -273,9 +284,9 @@ export const DesktopImages: React.FC = () => {
         y: e.clientY - 100
       };
       
-      await addImage(file, dropPosition);
+      await handleImageUpload(file, dropPosition);
     }
-  }, [addImage]);
+  }, [handleImageUpload]);
 
   // Add document-level event listeners to prevent default browser behavior
   useEffect(() => {
@@ -376,7 +387,7 @@ export const DesktopImages: React.FC = () => {
           onSizeChange={updateImageSize}
           onSizeChangeLocal={updateImageSizeLocal}
           onAspectRatioUpdate={updateImageAspectRatio}
-          onDelete={deleteImage}
+          onDelete={handleImageDelete}
         />
       ))}
 

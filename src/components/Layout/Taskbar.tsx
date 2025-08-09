@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button95 } from '../Windows95UI';
 import { TaskbarSyncStatus } from '../SyncStatus/TaskbarSyncStatus';
+import { TaskbarStorageCounter } from '../StorageCounter/TaskbarStorageCounter';
 import { useSyncContext } from '../../contexts/SyncContext';
 import { colors } from '../../styles/colors';
 import { WindowState, WindowType } from '../../types/index';
@@ -65,6 +66,9 @@ export const Taskbar: React.FC<TaskbarProps> = ({
           </Button95>
         ))}
       </div>
+
+      {/* Storage Usage Counter */}
+      <TaskbarStorageCounter />
 
       {/* Sync Status Indicator */}
       <TaskbarSyncStatus isActive={isActive} />

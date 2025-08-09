@@ -81,7 +81,7 @@ export const Desktop3DModels: React.FC = () => {
     error
   } = useDesktop3DModels();
 
-  const { startSync, endSync } = useSyncContext();
+  const { startSync, endSync, onStorageChange } = useSyncContext();
   const [dragOver, setDragOver] = useState(false);
   const [localPositions, setLocalPositions] = useState<Record<string, { x: number; y: number }>>({});
   const [localSizes, setLocalSizes] = useState<Record<string, { width: number; height: number }>>({});
@@ -104,6 +104,16 @@ export const Desktop3DModels: React.FC = () => {
     }, 500),
     []
   );
+
+  const handleModelUpload = useCallback(async (file: File, position: { x: number; y: number }) => {
+    await uploadModel(file, position);
+    onStorageChange(); // Notify that storage has changed
+  }, [uploadModel, onStorageChange]);
+
+  const handleModelDelete = useCallback(async (id: string) => {
+    await deleteModel(id);
+    onStorageChange(); // Notify that storage has changed
+  }, [deleteModel, onStorageChange]);
 
   const handlePositionChangeLocal = useCallback((id: string, position: { x: number; y: number }) => {
     setLocalPositions(prev => ({ ...prev, [id]: position }));
@@ -139,9 +149,9 @@ export const Desktop3DModels: React.FC = () => {
         y: clientY - 150
       };
       
-      await uploadModel(file, position);
+      await handleModelUpload(file, position);
     }
-  }, [uploadModel]);
+  }, [handleModelUpload]);
 
   // Listen for non-image files dropped by DesktopImages component
   useEffect(() => {
@@ -280,7 +290,7 @@ export const Desktop3DModels: React.FC = () => {
             onPositionChangeLocal={handlePositionChangeLocal}
             onSizeChange={handleSizeChange}
             onSizeChangeLocal={handleSizeChangeLocal}
-            onDelete={deleteModel}
+            onDelete={handleModelDelete}
           />
         );
       })}
