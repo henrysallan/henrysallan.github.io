@@ -1,123 +1,61 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useDesktop3DModels, Desktop3DModel } from '../../hooks/useDesktop3DModels';
 import { ThreeDViewer } from '../ThreeDViewer';
+import { DraggableWindow } from '../Layout/DraggableWindow';
+import { useSyncContext } from '../../contexts/SyncContext';
 import { debounce } from '../../utils/debounce';
+import { Position, Size } from '../../types/index';
 
 interface Draggable3DModelProps {
   id: string;
   model: Desktop3DModel;
+  initialSize?: { width: number; height: number };
   onPositionChange: (id: string, position: { x: number; y: number }) => void;
   onPositionChangeLocal: (id: string, position: { x: number; y: number }) => void;
+  onSizeChange: (id: string, size: { width: number; height: number }) => void;
+  onSizeChangeLocal: (id: string, size: { width: number; height: number }) => void;
   onDelete: (id: string) => void;
 }
 
 const Draggable3DModel: React.FC<Draggable3DModelProps> = ({
   id,
   model,
+  initialSize = { width: 400, height: 328 },
   onPositionChange,
   onPositionChangeLocal,
+  onSizeChange,
+  onSizeChangeLocal,
   onDelete
 }) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [size] = useState({ width: 400, height: 328 });
+  const [size, setSize] = useState<Size>(initialSize);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (e.target !== e.currentTarget && !(e.target as Element).classList.contains('drag-handle')) {
-      return;
-    }
-    
-    e.preventDefault();
-    setIsDragging(true);
-    setDragStart({
-      x: e.clientX - model.position.x,
-      y: e.clientY - model.position.y
-    });
-  }, [model.position]);
+  const handlePositionChange = useCallback((_windowId: string, position: Position) => {
+    onPositionChangeLocal(id, position);
+    onPositionChange(id, position);
+  }, [id, onPositionChange, onPositionChangeLocal]);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
-    
-    const newPosition = {
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y
-    };
-    
-    onPositionChangeLocal(id, newPosition);
-  }, [isDragging, dragStart, id, onPositionChangeLocal]);
+  const handleSizeChange = useCallback((_windowId: string, newSize: Size) => {
+    setSize(newSize);
+    onSizeChangeLocal(id, newSize);
+    onSizeChange(id, newSize);
+  }, [id, onSizeChange, onSizeChangeLocal]);
 
-  const handleMouseUp = useCallback(() => {
-    if (isDragging) {
-      setIsDragging(false);
-      onPositionChange(id, model.position);
-    }
-  }, [isDragging, id, model.position, onPositionChange]);
-
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging, handleMouseMove, handleMouseUp]);
-
-  const modelStyle: React.CSSProperties = {
-    position: 'absolute',
-    left: model.position.x,
-    top: model.position.y,
-    width: size.width,
-    height: size.height,
-    cursor: isDragging ? 'grabbing' : 'grab',
-    zIndex: isDragging ? 9999 : 1000,
-    userSelect: 'none',
-    background: '#c0c0c0',
-    border: '2px outset #c0c0c0',
-    borderRadius: '0'
-  };
-
-  const headerStyle: React.CSSProperties = {
-    background: '#008080',
-    color: '#ffffff',
-    padding: '4px 8px',
-    fontSize: '11px',
-    fontFamily: "'Pixelify Sans', monospace",
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottom: '1px solid #404040',
-    cursor: 'grab'
-  };
+  const handleClose = useCallback(() => {
+    onDelete(id);
+  }, [id, onDelete]);
 
   return (
-    <div style={modelStyle} onMouseDown={handleMouseDown} className="desktop-3d-model">
-      {/* Header */}
-      <div style={headerStyle} className="drag-handle">
-        <span title={model.name}>
-          🎲 {model.name.length > 25 ? model.name.substring(0, 25) + '...' : model.name}
-        </span>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(id);
-          }}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#ffffff',
-            fontSize: '12px',
-            cursor: 'pointer'
-          }}
-          title="Close"
-        >
-          ✕
-        </button>
-      </div>
-
-      {/* 3D Viewer */}
-      <div style={{ width: '100%', height: 'calc(100% - 28px)' }}>
+    <DraggableWindow
+      id={id}
+      title={`🎲 ${model.name.length > 25 ? model.name.substring(0, 25) + '...' : model.name}`}
+      position={model.position}
+      size={size}
+      onPositionChange={handlePositionChange}
+      onSizeChange={handleSizeChange}
+      onClose={handleClose}
+      zIndex={1000}
+    >
+      <div style={{ width: '100%', height: '100%' }}>
         <ThreeDViewer
           modelUrl={model.url}
           modelName={model.name}
@@ -128,7 +66,7 @@ const Draggable3DModel: React.FC<Draggable3DModelProps> = ({
           }}
         />
       </div>
-    </div>
+    </DraggableWindow>
   );
 };
 
@@ -143,15 +81,28 @@ export const Desktop3DModels: React.FC = () => {
     error
   } = useDesktop3DModels();
 
+  const { startSync, endSync } = useSyncContext();
   const [dragOver, setDragOver] = useState(false);
   const [localPositions, setLocalPositions] = useState<Record<string, { x: number; y: number }>>({});
+  const [localSizes, setLocalSizes] = useState<Record<string, { width: number; height: number }>>({});
 
   // Debounced position update to Firestore
   const debouncedPositionUpdate = useCallback(
     debounce((id: string, position: { x: number; y: number }) => {
+      startSync();
       updateModelPosition(id, position);
+      setTimeout(endSync, 1200); // Increased from 800ms for better visibility
     }, 500),
-    [updateModelPosition]
+    [updateModelPosition, startSync, endSync]
+  );
+
+  // For now, we'll just store sizes locally since the backend doesn't support size persistence
+  const debouncedSizeUpdate = useCallback(
+    debounce((_id: string, _size: { width: number; height: number }) => {
+      // Could implement size persistence in the future
+      console.log('Size update - not persisted to backend yet');
+    }, 500),
+    []
   );
 
   const handlePositionChangeLocal = useCallback((id: string, position: { x: number; y: number }) => {
@@ -161,6 +112,50 @@ export const Desktop3DModels: React.FC = () => {
   const handlePositionChange = useCallback((id: string, position: { x: number; y: number }) => {
     debouncedPositionUpdate(id, position);
   }, [debouncedPositionUpdate]);
+
+  const handleSizeChangeLocal = useCallback((id: string, size: { width: number; height: number }) => {
+    setLocalSizes(prev => ({ ...prev, [id]: size }));
+  }, []);
+
+  const handleSizeChange = useCallback((id: string, size: { width: number; height: number }) => {
+    debouncedSizeUpdate(id, size);
+  }, [debouncedSizeUpdate]);
+
+  // Process files for 3D models
+  const processFiles = useCallback(async (files: File[], clientX: number, clientY: number) => {
+    const glbFiles = files.filter(file => 
+      file.type === 'model/gltf-binary' || 
+      file.name.toLowerCase().endsWith('.glb') ||
+      file.name.toLowerCase().endsWith('.gltf')
+    );
+
+    if (glbFiles.length === 0) {
+      return;
+    }
+
+    for (const file of glbFiles) {
+      const position = {
+        x: clientX - 200, // Center the viewer
+        y: clientY - 150
+      };
+      
+      await uploadModel(file, position);
+    }
+  }, [uploadModel]);
+
+  // Listen for non-image files dropped by DesktopImages component
+  useEffect(() => {
+    const handleNonImageDrop = (e: CustomEvent) => {
+      const { files, originalEvent } = e.detail;
+      processFiles(files, originalEvent.clientX, originalEvent.clientY);
+    };
+
+    document.addEventListener('non-image-files-dropped', handleNonImageDrop as EventListener);
+    
+    return () => {
+      document.removeEventListener('non-image-files-dropped', handleNonImageDrop as EventListener);
+    };
+  }, [processFiles]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -177,27 +172,8 @@ export const Desktop3DModels: React.FC = () => {
     setDragOver(false);
 
     const files = Array.from(e.dataTransfer.files);
-    const glbFiles = files.filter(file => 
-      file.type === 'model/gltf-binary' || 
-      file.name.toLowerCase().endsWith('.glb') ||
-      file.name.toLowerCase().endsWith('.gltf')
-    );
-
-    if (glbFiles.length === 0) {
-      alert('Please drop GLB or GLTF files only');
-      return;
-    }
-
-    for (const file of glbFiles) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const position = {
-        x: e.clientX - rect.left - 200, // Center the viewer
-        y: e.clientY - rect.top - 150
-      };
-
-      await uploadModel(file, position);
-    }
-  }, [uploadModel]);
+    await processFiles(files, e.clientX, e.clientY);
+  }, [processFiles]);
 
   return (
     <>
@@ -293,13 +269,17 @@ export const Desktop3DModels: React.FC = () => {
       {/* 3D Model viewers */}
       {models.map((model: Desktop3DModel) => {
         const position = localPositions[model.id] || model.position;
+        const initialSize = localSizes[model.id] || { width: 400, height: 328 };
         return (
           <Draggable3DModel
             key={model.id}
             id={model.id}
             model={{ ...model, position }}
+            initialSize={initialSize}
             onPositionChange={handlePositionChange}
             onPositionChangeLocal={handlePositionChangeLocal}
+            onSizeChange={handleSizeChange}
+            onSizeChangeLocal={handleSizeChangeLocal}
             onDelete={deleteModel}
           />
         );

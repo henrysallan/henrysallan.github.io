@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useDesktopImages } from '../../hooks/useDesktopImages';
+import { useSyncContext } from '../../contexts/SyncContext';
 import { debounce } from '../../utils/debounce';
 
 interface DraggableImageProps {
@@ -34,20 +35,25 @@ const DraggableImage: React.FC<DraggableImageProps> = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const [aspectRatio, setAspectRatio] = useState<number | null>(storedAspectRatio || null);
+  const { startSync, endSync } = useSyncContext();
 
   // Create debounced versions of the database update functions
   const debouncedPositionUpdate = useMemo(
     () => debounce((id: string, position: { x: number; y: number }) => {
+      startSync();
       onPositionChange(id, position);
+      setTimeout(endSync, 1200); // Increased from 800ms to 1200ms for better visibility
     }, 500), // 500ms delay
-    [onPositionChange]
+    [onPositionChange, startSync, endSync]
   );
 
   const debouncedSizeUpdate = useMemo(
     () => debounce((id: string, size: { width: number; height: number }) => {
+      startSync();
       onSizeChange(id, size);
+      setTimeout(endSync, 1200); // Increased from 800ms to 1200ms for better visibility
     }, 500), // 500ms delay
-    [onSizeChange]
+    [onSizeChange, startSync, endSync]
   );
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -171,7 +177,9 @@ const DraggableImage: React.FC<DraggableImageProps> = ({
           
           // Save aspect ratio to database if not already stored
           if (!storedAspectRatio && ratio) {
+            startSync();
             onAspectRatioUpdate(id, ratio);
+            setTimeout(endSync, 1200); // Increased from 800ms
           }
         }}
       />
@@ -247,6 +255,17 @@ export const DesktopImages: React.FC = () => {
     const files = Array.from(e.dataTransfer?.files || []);
     const imageFiles = files.filter(file => file.type.startsWith('image/'));
 
+    // Only process image files here - the Desktop3DModels component should handle 3D files
+    // But we need to let it know about the drop event somehow...
+    if (imageFiles.length === 0) {
+      // If no image files, dispatch a custom event for other components
+      const customEvent = new CustomEvent('non-image-files-dropped', {
+        detail: { files, originalEvent: e }
+      });
+      document.dispatchEvent(customEvent);
+      return;
+    }
+
     for (const file of imageFiles) {
       // Calculate drop position relative to the screen
       const dropPosition = {
@@ -261,24 +280,31 @@ export const DesktopImages: React.FC = () => {
   // Add document-level event listeners to prevent default browser behavior
   useEffect(() => {
     const handleDragEnter = (e: DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragOver(true);
+      // Check if dragging files
+      if (e.dataTransfer?.types.includes('Files')) {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragOver(true);
+      }
     };
 
     const handleDragLeave = (e: DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      // Only hide the indicator if we're leaving the document
-      if (!e.relatedTarget) {
-        setIsDragOver(false);
+      if (e.dataTransfer?.types.includes('Files')) {
+        e.preventDefault();
+        e.stopPropagation();
+        // Only hide the indicator if we're leaving the document
+        if (!e.relatedTarget) {
+          setIsDragOver(false);
+        }
       }
     };
 
     const handleDragOver = (e: DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragOver(true);
+      if (e.dataTransfer?.types.includes('Files')) {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragOver(true);
+      }
     };
 
     // Add event listeners to document

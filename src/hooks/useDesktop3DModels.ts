@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
-import { db, storage } from '../config/firebase';
+import { db, storage, auth } from '../config/firebase';
 import { debounce } from '../utils/debounce';
 
 export interface Desktop3DModel {
@@ -14,13 +14,12 @@ export interface Desktop3DModel {
   storageRef: string;
 }
 
-const COLLECTION_NAME = 'desktop3DModels';
 const STORAGE_PATH = 'desktop-3d-models';
 
 // Debounced position update
-const debouncedUpdatePosition = debounce(async (modelId: string, position: { x: number; y: number }) => {
+const debouncedUpdatePosition = debounce(async (userId: string, modelId: string, position: { x: number; y: number }) => {
   try {
-    const modelRef = doc(db, COLLECTION_NAME, modelId);
+    const modelRef = doc(db, 'users', userId, 'desktop3DModels', modelId);
     await updateDoc(modelRef, { position });
   } catch (error) {
     console.error('Error updating 3D model position:', error);
@@ -35,7 +34,16 @@ export const useDesktop3DModels = () => {
 
   // Load models from Firestore
   useEffect(() => {
-    const q = query(collection(db, COLLECTION_NAME), orderBy('createdAt', 'desc'));
+    const user = auth.currentUser;
+    if (!user) {
+      setModels([]);
+      return;
+    }
+
+    const q = query(
+      collection(db, 'users', user.uid, 'desktop3DModels'), 
+      orderBy('createdAt', 'desc')
+    );
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const modelsData = snapshot.docs.map(doc => ({
@@ -54,6 +62,12 @@ export const useDesktop3DModels = () => {
   }, []);
 
   const uploadModel = useCallback(async (file: File, position: { x: number; y: number }) => {
+    const user = auth.currentUser;
+    if (!user) {
+      setError('User not authenticated');
+      return;
+    }
+
     try {
       setUploading(true);
       setUploadProgress(0);
@@ -100,8 +114,8 @@ export const useDesktop3DModels = () => {
               // Generate unique window ID
               const windowId = `model-window-${timestamp}`;
               
-              // Save model data to Firestore
-              await addDoc(collection(db, COLLECTION_NAME), {
+              // Save model data to user's subcollection
+              await addDoc(collection(db, 'users', user.uid, 'desktop3DModels'), {
                 name: file.name,
                 url: downloadURL,
                 position,
@@ -129,22 +143,28 @@ export const useDesktop3DModels = () => {
   }, []);
 
   const updateModelPosition = useCallback((modelId: string, position: { x: number; y: number }) => {
+    const user = auth.currentUser;
+    if (!user) return;
+
     // Update local state immediately for responsive UI
     setModels(prev => prev.map(model => 
       model.id === modelId ? { ...model, position } : model
     ));
     
     // Debounced update to Firestore
-    debouncedUpdatePosition(modelId, position);
+    debouncedUpdatePosition(user.uid, modelId, position);
   }, []);
 
   const deleteModel = useCallback(async (modelId: string) => {
+    const user = auth.currentUser;
+    if (!user) return;
+
     try {
       const model = models.find(m => m.id === modelId);
       if (!model) return;
 
-      // Delete from Firestore
-      await deleteDoc(doc(db, COLLECTION_NAME, modelId));
+      // Delete from user's subcollection
+      await deleteDoc(doc(db, 'users', user.uid, 'desktop3DModels', modelId));
       
       // Delete from Storage
       try {

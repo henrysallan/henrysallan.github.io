@@ -28,6 +28,7 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [resizeDirection, setResizeDirection] = useState<string>('');
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
 
@@ -43,7 +44,14 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
 
   const handleResizeMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
+    const target = e.target as HTMLElement;
+    const direction = target.classList.contains('resize-se') ? 'se' 
+                     : target.classList.contains('resize-e') ? 'e'
+                     : target.classList.contains('resize-s') ? 's'
+                     : 'se';
+    
     setIsResizing(true);
+    setResizeDirection(direction);
     setResizeStart({
       x: e.clientX,
       y: e.clientY,
@@ -59,18 +67,30 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
         y: e.clientY - dragStart.y
       });
     } else if (isResizing) {
-      const newWidth = Math.max(200, resizeStart.width + (e.clientX - resizeStart.x));
-      const newHeight = Math.max(150, resizeStart.height + (e.clientY - resizeStart.y));
+      const deltaX = e.clientX - resizeStart.x;
+      const deltaY = e.clientY - resizeStart.y;
+      
+      let newWidth = size.width;
+      let newHeight = size.height;
+      
+      if (resizeDirection.includes('e')) {
+        newWidth = Math.max(200, resizeStart.width + deltaX);
+      }
+      if (resizeDirection.includes('s')) {
+        newHeight = Math.max(150, resizeStart.height + deltaY);
+      }
+      
       onSizeChange(id, {
         width: newWidth,
         height: newHeight
       });
     }
-  }, [isDragging, isResizing, dragStart.x, dragStart.y, resizeStart, id, onPositionChange, onSizeChange]);
+  }, [isDragging, isResizing, dragStart.x, dragStart.y, resizeStart, resizeDirection, id, onPositionChange, onSizeChange, size.width, size.height]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
     setIsResizing(false);
+    setResizeDirection('');
   }, []);
 
   useEffect(() => {
@@ -94,7 +114,9 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
         width: size.width,
         height: size.height,
         zIndex: zIndex,
-        cursor: isDragging ? 'move' : 'default'
+        cursor: isDragging ? 'move' : 'default',
+        pointerEvents: 'auto',
+        outline: isResizing ? '2px dashed #0000ff' : 'none'
       }}
       onMouseDown={handleMouseDown}
     >
@@ -102,18 +124,58 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
         {children}
       </Window95>
       
-      {/* Resize handle */}
+      {/* Resize handles */}
+      
+      {/* Bottom-right corner resize handle (invisible but functional) */}
       <div
-        className="resize-handle"
+        className="resize-handle resize-se"
         style={{
           position: 'absolute',
           bottom: 0,
           right: 0,
-          width: '16px',
-          height: '16px',
+          width: '12px',
+          height: '12px',
           cursor: 'se-resize',
-          background: `linear-gradient(135deg, transparent 0%, transparent 30%, #808080 30%, #808080 35%, transparent 35%, transparent 65%, #808080 65%, #808080 70%, transparent 70%)`,
-          userSelect: 'none'
+          background: 'transparent',
+          userSelect: 'none',
+          zIndex: 1000,
+          pointerEvents: 'auto'
+        }}
+        onMouseDown={handleResizeMouseDown}
+      />
+
+      {/* Right edge resize handle (invisible but functional) */}
+      <div
+        className="resize-handle resize-e"
+        style={{
+          position: 'absolute',
+          top: '20px',
+          right: 0,
+          width: '6px',
+          height: 'calc(100% - 32px)',
+          cursor: 'e-resize',
+          userSelect: 'none',
+          zIndex: 999,
+          pointerEvents: 'auto',
+          background: 'transparent'
+        }}
+        onMouseDown={handleResizeMouseDown}
+      />
+
+      {/* Bottom edge resize handle (invisible but functional) */}
+      <div
+        className="resize-handle resize-s"
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: '20px',
+          width: 'calc(100% - 32px)',
+          height: '6px',
+          cursor: 's-resize',
+          userSelect: 'none',
+          zIndex: 999,
+          pointerEvents: 'auto',
+          background: 'transparent'
         }}
         onMouseDown={handleResizeMouseDown}
       />

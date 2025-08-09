@@ -13,6 +13,7 @@ import { DesktopImages } from './components/DesktopImages';
 import { Desktop3DModels } from './components/Desktop3DModels';
 import { UIDemo } from './components/UIDemo';
 import { Login } from './components/Login';
+import { SyncProvider } from './contexts/SyncContext';
 import { useWindowStore } from './store/useWindowStore';
 import { WindowType } from './types/index';
 import { colors } from './styles/colors';
@@ -27,7 +28,7 @@ const componentMap: Record<WindowType, React.ComponentType> = {
   uidemo: UIDemo
 };
 
-function App() {
+const AppContent: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -135,6 +136,14 @@ function App() {
         currentTime={currentTime}
       />
     </div>
+  );
+};
+
+function App() {
+  return (
+    <SyncProvider>
+      <AppContent />
+    </SyncProvider>
   );
 }
 

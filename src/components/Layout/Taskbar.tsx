@@ -1,5 +1,7 @@
 import React from 'react';
 import { Button95 } from '../Windows95UI';
+import { TaskbarSyncStatus } from '../SyncStatus/TaskbarSyncStatus';
+import { useSyncContext } from '../../contexts/SyncContext';
 import { colors } from '../../styles/colors';
 import { WindowState, WindowType } from '../../types/index';
 
@@ -24,6 +26,8 @@ export const Taskbar: React.FC<TaskbarProps> = ({
   onLogout,
   currentTime
 }) => {
+  const { isActive } = useSyncContext();
+  
   return (
     <div style={{
       position: 'fixed',
@@ -61,6 +65,9 @@ export const Taskbar: React.FC<TaskbarProps> = ({
           </Button95>
         ))}
       </div>
+
+      {/* Sync Status Indicator */}
+      <TaskbarSyncStatus isActive={isActive} />
 
       <div style={{ 
         padding: '2px 8px', 
